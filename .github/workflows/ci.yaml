@@ -1,0 +1,42 @@
+name: VoltCalc Pro
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      
+      - name: Install Dependencies
+        run: bun ci
+      
+      - name: Run Tests
+        run: bun test --coverage
+
+      - name: Build Production Bundle
+        run: bun run build
+
+  #deploy:
+  #  needs: quality-gate
+  #  runs-on: ubuntu-latest
+  #  if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+  #  steps:
+  #    - name: Checkout Repository
+  #      uses: actions/checkout@v4
+
+  #    - name: Deploy to Vercel Production
+  #      uses: amondnet/vercel-action@v25
+  #      with:
+  #        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+  #        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+  #        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+  #        vercel-args: "--prod"
